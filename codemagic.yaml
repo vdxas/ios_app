@@ -35,7 +35,7 @@ workflows:
 
       - name: Clean & build (no code signing)
         script: |
-          set -euo pipefail
+          set -eo pipefail
           xcodebuild \
             -project InvoicerApp.xcodeproj \
             -scheme "$SCHEME" \
@@ -47,7 +47,7 @@ workflows:
 
       - name: Collect .app artifact
         script: |
-          set -euo pipefail
+          set -eo pipefail
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -type d -path "*/Build/Products/$CONFIGURATION-iphoneos/${SCHEME}.app" -print -quit)
           if [ -z "${APP_PATH:-}" ]; then
             echo "Could not find .app in DerivedData. Listing candidates:"
@@ -55,8 +55,11 @@ workflows:
             exit 1
           fi
           echo "Found app at: $APP_PATH"
-          mkdir -p "$CM_ARTIFACTS"
-          cp -R "$APP_PATH" "$CM_ARTIFACTS/"
+
+          # Naudokime lokalinį artefaktų katalogą, jei CM_ARTIFACTS nėra nustatytas
+          ART_DIR="${CM_ARTIFACTS:-$PWD/artifacts}"
+          mkdir -p "$ART_DIR"
+          cp -R "$APP_PATH" "$ART_DIR/"
 
     artifacts:
-      - $CM_ARTIFACTS/*.app
+      - artifacts/*.app
