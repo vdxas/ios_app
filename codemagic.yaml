@@ -1,4 +1,5 @@
 workflows:
+  # Esamas workflow paliktas kaip buvo (build'ina device .app)
   ios-workflow:
     name: iOS App (Debug .app)
     max_build_duration: 120
@@ -53,21 +54,9 @@ workflows:
     artifacts:
       - artifacts/*.app
 
-    simulator-workflow:
-    name: Build for simulator
-    environment:
-      xcode: latest
-    scripts:
-      - name: Build with Generic Destination
-        script: |
-          xcodebuild build \
-            -project "InvoicerApp.xcodeproj" \
-            -scheme "InvoicerApp" \
-            -sdk iphonesimulator \
-            -configuration Debug    
-
-  ios-testflight:
-    name: iOS App (Release → TestFlight)
+  # NAUJAS: iOS SIMULIATORIAUS build'as App Preview (Stellar) naršyklėje
+  ios-simulator-preview:
+    name: iOS Simulator (App Preview)
     max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
@@ -75,12 +64,7 @@ workflows:
       cocoapods: default
       vars:
         SCHEME: "InvoicerApp"
-        CONFIGURATION: "Release"
-        BUNDLE_ID: "lt.vdxas.invoicerwrapper"
-        EXPORT_METHOD: "app-store"   # TestFlight
-        APPSTORE_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
-        APPSTORE_KEY_ID: $APP_STORE_CONNECT_KEY_ID
-        APPSTORE_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
+        CONFIGURATION: "Debug"
     cache:
       cache_paths:
         - ~/.cache/Homebrew
@@ -101,93 +85,19 @@ workflows:
           xcodegen generate
           ls -la *.xcodeproj
 
-      - name: Bump build number from CI (optional)
+      - name: Build for iOS Simulator (.app for App Preview)
         script: |
-          set -e
-          NEW_BUILD_NUMBER=$(date +%s)
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEW_BUILD_NUMBER" InvoicerApp/Info.plist
-          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" InvoicerApp/Info.plist || true
-          /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" InvoicerApp/Info.plist
-
-      - name: Archive (Release, signing via App Store Connect)
-        script: |
-          set -euo pipefail
-          # Įjungiam Automatic signing
+          set -eo pipefail
+          # svarbu: -sdk iphonesimulator ir 'generic/platform=iOS Simulator'
           xcodebuild \
             -project InvoicerApp.xcodeproj \
             -scheme "$SCHEME" \
             -configuration "$CONFIGURATION" \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            DEVELOPMENT_TEAM="" \
-            CODE_SIGN_STYLE=Automatic \
-            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
-            clean archive \
-            -archivePath "$PWD/build/$SCHEME.xcarchive" | xcpretty
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            clean build | xcpretty
 
-      - name: Create ExportOptions.plist & Export .ipa
-        script: |
-          set -euo pipefail
-          cat > ExportOptions.plist <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key><string>${EXPORT_METHOD}</string>
-            <key>manageAppVersionAndBuildNumber</key><true/>
-            <key>uploadSymbols</key><true/>
-            <key>signingStyle</key><string>automatic</string>
-            <key>stripSwiftSymbols</key><true/>
-            <key>destination</key><string>export</string>
-          </dict>
-          </plist>
-          EOF
-
-          xcodebuild -exportArchive \
-            -archivePath "$PWD/build/$SCHEME.xcarchive" \
-            -exportOptionsPlist ExportOptions.plist \
-            -exportPath "$PWD/build/export" | xcpretty
-
-          ls -la "$PWD/build/export"
-
-      - name: Upload to App Store Connect (TestFlight)
-        script: |
-          set -euo pipefail
-          IPA_PATH=$(find "$PWD/build/export" -maxdepth 1 -name "*.ipa" -print -quit)
-          if [ -z "${IPA_PATH:-}" ]; then
-            echo "No .ipa found to upload"
-            exit 1
-          fi
-
-          # Naudojame altool per xcrun (Transporter CLI)
-          # Reikia App Store Connect API rakto
-          # Codemagic perduoda privatų raktą per ENV; sugeneruojame .p8 failą
-          echo "$APPSTORE_PRIVATE_KEY" > AuthKey_$APPSTORE_KEY_ID.p8
-
-          xcrun altool --upload-app \
-            --type ios \
-            --file "$IPA_PATH" \
-            --apiKey "$APPSTORE_KEY_ID" \
-            --apiIssuer "$APPSTORE_ISSUER_ID" \
-            --verbose
-
-      - name: Collect artifacts
-        script: |
-          set -e
-          ART_DIR="${CM_ARTIFACTS:-$PWD/artifacts}"
-          mkdir -p "$ART_DIR"
-          cp -R "$PWD/build/$SCHEME.xcarchive" "$ART_DIR/" || true
-          cp -R "$PWD/build/export" "$ART_DIR/" || true
-
+    # App Preview „Quick Launch“ atsiras, kai artefaktuose yra SIMULIATORIAUS .app
     artifacts:
-      - artifacts/**/*.ipa
-      - artifacts/**/*.xcarchive
-      - artifacts/**/ExportOptions.plist
-
-    publishing:
-      email:
-        recipients:
-          - your@email.here
-        notify:
-          success: true
-          failure: true
+      - /Users/builder/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app
