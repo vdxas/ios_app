@@ -53,6 +53,19 @@ workflows:
     artifacts:
       - artifacts/*.app
 
+    simulator-workflow:
+    name: Build for simulator
+    environment:
+      xcode: latest
+    scripts:
+      - name: Build with Generic Destination
+        script: |
+          xcodebuild build \
+            -project "yourproject.xcodeproj" \
+            -scheme "yourscheme" \
+            -sdk iphonesimulator \
+            -configuration Debug    
+
   ios-testflight:
     name: iOS App (Release → TestFlight)
     max_build_duration: 120
