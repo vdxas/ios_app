@@ -20,7 +20,8 @@ struct WebContainerView: UIViewRepresentable {
         let cfg = WKWebViewConfiguration()
         cfg.defaultWebpagePreferences.allowsContentJavaScript = true
         cfg.allowsInlineMediaPlayback = true
-        cfg.websiteDataStore = .default() // kad sesijos/cookies veiktų
+        cfg.allowsAirPlayForMediaPlayback = true
+        cfg.websiteDataStore = .default() // cookies/sesijos
 
         let wv = WKWebView(frame: .zero, configuration: cfg)
         wv.navigationDelegate = context.coordinator
@@ -40,21 +41,25 @@ struct WebContainerView: UIViewRepresentable {
         init(allowedHost: String) { self.allowedHost = allowedHost }
 
         // Leisti tik app.invoicer.lt
-        func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
+        func webView(_ webView: WKWebView,
+                     decidePolicyFor navigationAction: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-            guard let host = action.request.url?.host else { decisionHandler(.cancel); return }
+            guard let host = navigationAction.request.url?.host else {
+                decisionHandler(.cancel); return
+            }
             decisionHandler(host == allowedHost ? .allow : .cancel)
         }
 
-        // <input type="file" accept="image/*" capture> veiks „out of the box“; handleris paliktas pasyvus.
+        // <input type="file" accept="image/*" capture> – sisteminis kameros/galerijos pasirinkimas
         func webView(_ webView: WKWebView,
                      runOpenPanelWith parameters: WKOpenPanelParameters,
                      initiatedByFrame frame: WKFrameInfo,
                      completionHandler: @escaping ([URL]?) -> Void) {
+            // Nereikia custom picker'io – WKWebView pats parodys dialogą, jei Info.plist turi kameros raktą
             completionHandler(nil)
         }
 
-        // window.alert
+        // window.alert(...)
         func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
                      initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
             let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -64,6 +69,7 @@ struct WebContainerView: UIViewRepresentable {
     }
 }
 
+// Naudingas pagalbininkas alert'ams pateikti
 private extension UIApplication {
     func topMostViewController(base: UIViewController? = {
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

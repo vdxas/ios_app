@@ -1,13 +1,18 @@
 name: InvoicerApp
+
 options:
   bundleIdPrefix: lt.vdxas
+  minimumXcodeGenVersion: 2.37.0
+
 configs:
   Debug: debug
   Release: release
+
 settings:
   BASE_SDK: iphoneos
   IPHONEOS_DEPLOYMENT_TARGET: "16.0"
   SWIFT_VERSION: "5.0"
+
 targets:
   InvoicerApp:
     type: application.iOS
@@ -19,7 +24,8 @@ targets:
       path: InvoicerApp/Info.plist
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: lt.vdxas.invoicerwrapper
+      CODE_SIGN_STYLE: Automatic
+      TARGETED_DEVICE_FAMILY: "1"        # iPhone
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-      TARGETED_DEVICE_FAMILY: "1" # iPhone
     scheme:
       testTargets: []

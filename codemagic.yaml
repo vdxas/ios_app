@@ -8,34 +8,34 @@ workflows:
       cocoapods: default
       vars:
         SCHEME: "InvoicerApp"
-        CONFIGURATION: "Debug"        # arba "Release"
+        CONFIGURATION: "Debug"                   # arba "Release"
     cache:
       cache_paths:
         - ~/.cache/Homebrew
         - ~/Library/Caches/CocoaPods
         - ~/Library/Developer/Xcode/DerivedData
-        - ~/Library/Developer/XCPGDevices
-        - ~/Library/Developer/Xcode/Products
     scripts:
-      - name: Print Xcode version & list files
+      - name: Show Xcode version & repo layout
         script: |
+          set -e
           xcodebuild -version
+          echo "--- repo root ---"
           pwd
           ls -la
+          echo "--- InvoicerApp dir ---"
+          ls -la InvoicerApp || true
 
-      - name: (Optional) Generate .xcodeproj with XcodeGen if project.yml exists
+      - name: Generate .xcodeproj with XcodeGen
         script: |
-          if [ -f project.yml ]; then
-            brew install xcodegen || true
-            xcodegen generate
-          else
-            echo "No project.yml; using existing .xcodeproj"
-          fi
+          set -e
+          brew install xcodegen || true
+          xcodegen generate
+          echo "Generated Xcode project:"
+          ls -la *.xcodeproj
 
-      - name: Clean build (no code signing)
+      - name: Clean & build (no code signing)
         script: |
           set -euo pipefail
-          # Jei turi workspace vietoj xcodeproj, pakeisk -project į -workspace ir pridėk -scheme atitinkamai.
           xcodebuild \
             -project InvoicerApp.xcodeproj \
             -scheme "$SCHEME" \
@@ -48,10 +48,9 @@ workflows:
       - name: Collect .app artifact
         script: |
           set -euo pipefail
-          # Rask su-built'intą .app:
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -type d -path "*/Build/Products/$CONFIGURATION-iphoneos/${SCHEME}.app" -print -quit)
           if [ -z "${APP_PATH:-}" ]; then
-            echo "Could not find .app in DerivedData. Dumping possible paths:"
+            echo "Could not find .app in DerivedData. Listing candidates:"
             find ~/Library/Developer/Xcode/DerivedData -type d -name "${SCHEME}.app" | sed 's#^# -> #'
             exit 1
           fi
@@ -61,10 +60,3 @@ workflows:
 
     artifacts:
       - $CM_ARTIFACTS/*.app
-    publishing:
-      email:
-        recipients:
-          - your@email.here
-        notify:
-          success: true
-          failure: true
