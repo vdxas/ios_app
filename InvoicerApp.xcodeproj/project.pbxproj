@@ -8,6 +8,7 @@
         /* Begin PBXBuildFile section */
         1A2B3C4D5E6F7G8H /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F7G8I /* ContentView.swift */; };
         1A2B3C4D5E6F7G8J /* InvoicerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F7G8K /* InvoicerApp.swift */; };
+        1A2B3C4D5E6F7G8O /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F7G8N /* Assets.xcassets */; };
         /* End PBXBuildFile section */
 
         /* Begin PBXFileReference section */
@@ -15,6 +16,8 @@
         1A2B3C4D5E6F7G8I /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
         1A2B3C4D5E6F7G8K /* InvoicerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoicerApp.swift; sourceTree = "<group>"; };
         1A2B3C4D5E6F7G8M /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+        1A2B3C4D5E6F7G8N /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+        1A2B3C4D5E6F7G8X /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
         /* End PBXFileReference section */
 
         /* Begin PBXFrameworksBuildPhase section */
@@ -22,6 +25,7 @@
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
             files = (
+                1A2B3C4D5E6F7G8Q /* WebKit.framework in Frameworks */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -34,8 +38,17 @@
                 1A2B3C4D5E6F7G8K /* InvoicerApp.swift */,
                 1A2B3C4D5E6F7G8I /* ContentView.swift */,
                 1A2B3C4D5E6F7G8M /* Info.plist */,
+                1A2B3C4D5E6F7G8N /* Assets.xcassets */,
             );
             path = InvoicerApp;
+            sourceTree = "<group>";
+        };
+        1A2B3C4D5E6F7G8Y /* Frameworks */ = {
+            isa = PBXGroup;
+            children = (
+                1A2B3C4D5E6F7G8X /* WebKit.framework */,
+            );
+            name = Frameworks;
             sourceTree = "<group>";
         };
         1A2B3C4D5E6F7G8P /* Products */ = {
@@ -51,6 +64,7 @@
             children = (
                 1A2B3C4D5E6F7G8O /* InvoicerApp */,
                 1A2B3C4D5E6F7G8P /* Products */,
+                1A2B3C4D5E6F7G8Y /* Frameworks */,
             );
             sourceTree = "<group>";
         };
@@ -63,6 +77,7 @@
             buildPhases = (
                 1A2B3C4D5E6F7G8N /* Frameworks */,
                 1A2B3C4D5E6F7G8T /* Sources */,
+                1A2B3C4D5E6F7G8P /* Resources */,
             );
             buildRules = (
             );
@@ -116,6 +131,17 @@
             runOnlyForDeploymentPostprocessing = 0;
         };
         /* End PBXSourcesBuildPhase section */
+
+        /* Begin PBXResourcesBuildPhase section */
+        1A2B3C4D5E6F7G8P /* Resources */ = {
+            isa = PBXResourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                1A2B3C4D5E6F7G8O /* Assets.xcassets in Resources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        /* End PBXResourcesBuildPhase section */
 
         /* Begin XCBuildConfiguration section */
         1A2B3C4D5E6F7G8W /* Debug */ = {
@@ -260,6 +286,7 @@
                 SWIFT_EMIT_LOC_STRINGS = YES;
                 SWIFT_VERSION = 5.0;
                 TARGETED_DEVICE_FAMILY = "1,2";
+                ENABLE_WEBKIT = YES;
             };
             name = Debug;
         };
@@ -291,6 +318,7 @@
                 SWIFT_EMIT_LOC_STRINGS = YES;
                 SWIFT_VERSION = 5.0;
                 TARGETED_DEVICE_FAMILY = "1,2";
+                ENABLE_WEBKIT = YES;
             };
             name = Release;
         };
