@@ -1,0 +1,14 @@
+workflows:
+  ios-workflow:
+    name: iOS App
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Build iOS app
+        script: |
+          xcodebuild clean build -workspace "*.xcworkspace" -scheme "InvoicerApp" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    artifacts:
+      - build/ios/iphoneos/*.app
