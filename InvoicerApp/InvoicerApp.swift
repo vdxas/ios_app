@@ -55,7 +55,7 @@ struct WebContainerView: UIViewRepresentable {
                      runOpenPanelWith parameters: WKOpenPanelParameters,
                      initiatedByFrame frame: WKFrameInfo,
                      completionHandler: @escaping ([URL]?) -> Void) {
-            // Nereikia custom picker'io – WKWebView pats parodys dialogą, jei Info.plist turi kameros raktą
+            // WKWebView pats parodys dialogą, jei Info.plist turi kameros raktą
             completionHandler(nil)
         }
 

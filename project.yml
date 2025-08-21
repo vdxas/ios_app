@@ -2,7 +2,6 @@ name: InvoicerApp
 
 options:
   bundleIdPrefix: lt.vdxas
-  minimumXcodeGenVersion: 2.37.0
 
 configs:
   Debug: debug
@@ -15,8 +14,8 @@ settings:
 
 targets:
   InvoicerApp:
-    type: application.iOS
-    platform: iOS
+    type: application          # <-- TIK application
+    platform: iOS              # <-- platform nurodom atskirai
     deploymentTarget: "16.0"
     sources:
       - path: InvoicerApp
