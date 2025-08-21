@@ -6,9 +6,12 @@ workflows:
     environment:
       xcode: latest
       cocoapods: default
+      vars:
+        CLONE_DIRECTORY: "/Users/builder/clone"
     scripts:
       - name: Build iOS app
         script: |
+          cd $CLONE_DIRECTORY
           xcodebuild clean build -project InvoicerApp.xcodeproj -scheme InvoicerApp CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
     artifacts:
       - build/ios/iphoneos/*.app
