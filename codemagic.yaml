@@ -52,7 +52,7 @@ workflows:
           cp -R "$APP_PATH" "$ART_DIR/"
 
     artifacts:
-      - artifacts/*.app
+      - "artifacts/*.app"
 
   # iOS SIMULIATORIUI – App Preview naršyklėje (Stellar)
   ios-simulator-preview:
@@ -98,7 +98,7 @@ workflows:
             clean build | xcpretty
 
     artifacts:
-      - /Users/builder/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app
+      - "/Users/builder/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app"
 
   # Naujas: Android .apk „preview“ (emuliatoriui / atsisiųsti iš artefaktų)
   android:
@@ -107,7 +107,6 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       java: 17
-      # Android SDK jau yra prieinamas per $ANDROID_SDK_ROOT
     cache:
       cache_paths:
         - ~/.gradle/caches
@@ -127,5 +126,5 @@ workflows:
           ./gradlew assembleDebug
           ./gradlew :app:assembleDebug || true
     artifacts:
-      - app/build/outputs/apk/debug/app-debug.apk
-      - **/build/outputs/apk/debug/*.apk
+      - "app/build/outputs/apk/debug/app-debug.apk"
+      - "**/build/outputs/apk/debug/*.apk"
