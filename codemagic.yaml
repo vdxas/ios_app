@@ -61,8 +61,8 @@ workflows:
       - name: Build with Generic Destination
         script: |
           xcodebuild build \
-            -project "yourproject.xcodeproj" \
-            -scheme "yourscheme" \
+            -project "InvoicerApp.xcodeproj" \
+            -scheme "InvoicerApp" \
             -sdk iphonesimulator \
             -configuration Debug    
 
