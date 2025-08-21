@@ -14,11 +14,12 @@ settings:
 
 targets:
   InvoicerApp:
-    type: application          # <-- TIK application
-    platform: iOS              # <-- platform nurodom atskirai
+    type: application
+    platform: iOS
     deploymentTarget: "16.0"
+    # Įtraukiame tik vieną failą su @main, kad nebūtų "main attribute can only apply to one type"
     sources:
-      - path: InvoicerApp
+      - path: InvoicerApp/InvoicerApp.swift
     info:
       path: InvoicerApp/Info.plist
     settings:

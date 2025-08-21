@@ -50,15 +50,6 @@ struct WebContainerView: UIViewRepresentable {
             decisionHandler(host == allowedHost ? .allow : .cancel)
         }
 
-        // <input type="file" accept="image/*" capture> – sisteminis kameros/galerijos pasirinkimas
-        func webView(_ webView: WKWebView,
-                     runOpenPanelWith parameters: WKOpenPanelParameters,
-                     initiatedByFrame frame: WKFrameInfo,
-                     completionHandler: @escaping ([URL]?) -> Void) {
-            // WKWebView pats parodys dialogą, jei Info.plist turi kameros raktą
-            completionHandler(nil)
-        }
-
         // window.alert(...)
         func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
                      initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
